@@ -14,5 +14,7 @@ public interface UsuarioLogado {
 
     GrupoUsuario getGrupo();
 
+    String identityToken();
+
     String authError();
 }

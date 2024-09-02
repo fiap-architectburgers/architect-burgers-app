@@ -51,7 +51,7 @@ public class UsuarioLogadoTokenParser {
 
         if (identityToken == null || identityToken.isBlank()) {
             return new TokenBasedUsuarioLogado(false, null, null, null, null,
-                    "IdentityToken is missing");
+                    "IdentityToken is missing", null);
         }
 
         Jwt<?, ?> jwt;
@@ -60,7 +60,7 @@ public class UsuarioLogadoTokenParser {
         } catch (ExpiredJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
             LOGGER.warn("Erro validando IdentityToken: {} -- {}", e, identityToken);
             return new TokenBasedUsuarioLogado(false, null, null, null, null,
-                    "Erro ao validar IdentityToken: " + e.getMessage());
+                    "Erro ao validar IdentityToken: " + e.getMessage(), null);
         }
 
         Claims claims = (Claims) jwt.getPayload();
@@ -80,7 +80,8 @@ public class UsuarioLogadoTokenParser {
                 claims.get("custom:cpf", String.class),
                 claims.get("email", String.class),
                 group,
-                null);
+                null,
+                identityToken);
     }
 
     private class TokenBasedUsuarioLogado implements UsuarioLogado {
@@ -90,16 +91,18 @@ public class UsuarioLogadoTokenParser {
         private final String email;
         private final GrupoUsuario grupo;
         private final String authError;
+        private final String token;
 
         private TokenBasedUsuarioLogado(boolean autenticado,
                                         String nome, String cpf, String email, GrupoUsuario grupo,
-                                        String authError) {
+                                        String authError, String token) {
             this.autenticado = autenticado;
             this.nome = nome;
             this.cpf = cpf;
             this.email = email;
             this.grupo = grupo;
             this.authError = authError;
+            this.token = token;
         }
 
         @Override
@@ -133,6 +136,13 @@ public class UsuarioLogadoTokenParser {
             if (!autenticado)
                 throw new IllegalStateException("Usuario não autenticado");
             return grupo;
+        }
+
+        @Override
+        public String identityToken() {
+            if (!autenticado)
+                throw new IllegalStateException("Usuario não autenticado");
+            return token;
         }
 
         @Override

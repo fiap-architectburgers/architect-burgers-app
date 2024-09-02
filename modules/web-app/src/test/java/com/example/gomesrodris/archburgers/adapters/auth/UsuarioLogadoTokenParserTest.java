@@ -38,6 +38,7 @@ class UsuarioLogadoTokenParserTest {
         assertThrows(IllegalStateException.class, usuario::getCpf);
         assertThrows(IllegalStateException.class, usuario::getEmail);
         assertThrows(IllegalStateException.class, usuario::getGrupo);
+        assertThrows(IllegalStateException.class, usuario::identityToken);
 
         assertThat(usuario.authError()).isEqualTo("IdentityToken is missing");
     }
@@ -48,13 +49,13 @@ class UsuarioLogadoTokenParserTest {
 
         when(expirationCheckClock.now()).thenReturn(new Date(1725131899000L)); // Fixed time before the expiration of the example token
 
+        String token = "eyJraWQiOiIzXC9EQk5VQThYZWgzdTRFRnN6XC9JNlJOdTlZNkkyUGZqT2FFUTBkMlRXRWc9IiwiYWxnIjoiUlMyNTYifQ" +
+                ".eyJzdWIiOiI5NDU4YzQ2OC1iMDIxLTcwYzgtOWVhYy0xMzRhZDg5YmJmYTIiLCJjb2duaXRvOmdyb3VwcyI6WyJDbGllbnRlQ2FkYXN0cmFkbyJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV85NldGY3dCOEUiLCJjb2duaXRvOnVzZXJuYW1lIjoiOTQ1OGM0NjgtYjAyMS03MGM4LTllYWMtMTM0YWQ4OWJiZmEyIiwib3JpZ2luX2p0aSI6ImRjODI1NDI4LTI1NDktNGNjOC05MDg0LWFhM2I4NTNmNmFmNiIsImF1ZCI6IjZ2Y2" +
+                "tqb3ZybjF1dGFsaDJpZXJzOXExNGNhIiwiZXZlbnRfaWQiOiIxOWJmY2I2NC0xOGUyLTQ4NjEtYmI4ZS1iYTlmYWQ4YzIzZDkiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTcyNTEzMTY2OCwibmFtZSI6IkR1ZHVIYW1idXJnZXIiLCJleHAiOjE3MjUxMzUyNjgsImN1c3RvbTpjcGYiOiIxMjMzMjExMjM0MCIsImlhdCI6MTcyNTEzMTY2OCwianRpIjoiZjc4MjhmNmMtY2U2NS00MWQyLTg5NWYtZTBhMzg0OWM5MTI2IiwiZW1haWwiOiJkdWR1QGV4YW1wbGUuY29tIn0" +
+                ".sx3DrKFZkIl94mAGfmjKEUTtJYOrANK4U-qZPFvkshx8BmjmFupUitP8Is6ciI7R0fsZyFXt2qJQAyl5pNT_qu9vdUYcGoHxIUxlfCwAveD609SAbGFq7bcvOZ90ulsvypwLJPVJkBgsBDoT_vcisa7GpS19hh0xZWPIVEDzENLZCbaSQo0dcr3Vq03io4bNAOASUBzVoiWzz5BKIY50G0xw6WZIix0uwsI1GewJGU3eqchDWWAbDRD8ZfbHjy8HiD-haLTnj_Xq1ZIIUThx_95L_ltUXIJZC0rXqjZOdE-ero04obQF92sqM62P1xZKxxEBi7ETuQvC4vHmgnd_Fw";
+
         HttpHeaders headers = new HttpHeaders();
-        headers.put(UsuarioLogadoTokenParser.HEADER_NAME, List.of(
-                "eyJraWQiOiIzXC9EQk5VQThYZWgzdTRFRnN6XC9JNlJOdTlZNkkyUGZqT2FFUTBkMlRXRWc9IiwiYWxnIjoiUlMyNTYifQ" +
-                        ".eyJzdWIiOiI5NDU4YzQ2OC1iMDIxLTcwYzgtOWVhYy0xMzRhZDg5YmJmYTIiLCJjb2duaXRvOmdyb3VwcyI6WyJDbGllbnRlQ2FkYXN0cmFkbyJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV85NldGY3dCOEUiLCJjb2duaXRvOnVzZXJuYW1lIjoiOTQ1OGM0NjgtYjAyMS03MGM4LTllYWMtMTM0YWQ4OWJiZmEyIiwib3JpZ2luX2p0aSI6ImRjODI1NDI4LTI1NDktNGNjOC05MDg0LWFhM2I4NTNmNmFmNiIsImF1ZCI6IjZ2Y2" +
-                        "tqb3ZybjF1dGFsaDJpZXJzOXExNGNhIiwiZXZlbnRfaWQiOiIxOWJmY2I2NC0xOGUyLTQ4NjEtYmI4ZS1iYTlmYWQ4YzIzZDkiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTcyNTEzMTY2OCwibmFtZSI6IkR1ZHVIYW1idXJnZXIiLCJleHAiOjE3MjUxMzUyNjgsImN1c3RvbTpjcGYiOiIxMjMzMjExMjM0MCIsImlhdCI6MTcyNTEzMTY2OCwianRpIjoiZjc4MjhmNmMtY2U2NS00MWQyLTg5NWYtZTBhMzg0OWM5MTI2IiwiZW1haWwiOiJkdWR1QGV4YW1wbGUuY29tIn0" +
-                        ".sx3DrKFZkIl94mAGfmjKEUTtJYOrANK4U-qZPFvkshx8BmjmFupUitP8Is6ciI7R0fsZyFXt2qJQAyl5pNT_qu9vdUYcGoHxIUxlfCwAveD609SAbGFq7bcvOZ90ulsvypwLJPVJkBgsBDoT_vcisa7GpS19hh0xZWPIVEDzENLZCbaSQo0dcr3Vq03io4bNAOASUBzVoiWzz5BKIY50G0xw6WZIix0uwsI1GewJGU3eqchDWWAbDRD8ZfbHjy8HiD-haLTnj_Xq1ZIIUThx_95L_ltUXIJZC0rXqjZOdE-ero04obQF92sqM62P1xZKxxEBi7ETuQvC4vHmgnd_Fw"
-        ));
+        headers.put(UsuarioLogadoTokenParser.HEADER_NAME, List.of(token));
 
         var usuario = parser.verificarUsuarioLogado(headers);
 
@@ -63,6 +64,7 @@ class UsuarioLogadoTokenParserTest {
         assertThat(usuario.getCpf()).isEqualTo("12332112340");
         assertThat(usuario.getEmail()).isEqualTo("dudu@example.com");
         assertThat(usuario.getGrupo()).isEqualTo(GrupoUsuario.ClienteCadastrado);
+        assertThat(usuario.identityToken()).isEqualTo(token);
         assertThat(usuario.authError()).isNull();
     }
 

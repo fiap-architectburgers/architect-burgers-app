@@ -90,19 +90,6 @@ class CarrinhoUseCasesTest {
     }
 
     @Test
-    void criarCarrinho_cadastrarNovoCliente_novoCarrinho() throws Exception {
-        when(clock.localDateTime()).thenReturn(dateTime);
-
-        when(clienteGateway.salvarCliente(clienteSemId)).thenReturn(cliente123);
-
-        when(carrinhoGateway.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
-                carrinhoVazioCliente123.withId(102));
-
-        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
-        assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(102));
-    }
-
-    @Test
     void addItemCarrinho() {
         Carrinho carrinhoInicial = Carrinho.carrinhoSalvoClienteIdentificado(
                 88, new IdCliente(123), null, dateTime);

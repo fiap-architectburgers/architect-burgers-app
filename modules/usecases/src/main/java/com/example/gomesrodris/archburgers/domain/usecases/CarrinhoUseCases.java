@@ -4,12 +4,9 @@ import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
-import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
-import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
-import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +20,6 @@ public class CarrinhoUseCases {
     private final Clock clock;
 
     private final RecuperarCarrinhoPolicy recuperarCarrinhoPolicy;
-    private final SalvarClientePolicy salvarClientePolicy;
 
     public CarrinhoUseCases(CarrinhoGateway carrinhoGateway,
                             ClienteGateway clienteGateway,
@@ -35,7 +31,6 @@ public class CarrinhoUseCases {
         this.clock = clock;
 
         this.recuperarCarrinhoPolicy = new RecuperarCarrinhoPolicy();
-        this.salvarClientePolicy = new SalvarClientePolicy();
     }
 
     public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param) {
@@ -62,15 +57,8 @@ public class CarrinhoUseCases {
             newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
                     Objects.requireNonNull(cliente.id(), "Unexpected state: cliente.id() is null"), clock.localDateTime());
         } else {
-            Cliente novoCliente = salvarClientePolicy.salvarClienteSeDadosCompletos(param);
-
-            if (novoCliente == null) {
-                newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(
-                        Objects.requireNonNull(param.nomeCliente(), "Unexpected state: nomeCliente is null"), clock.localDateTime());
-            } else {
-                newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
-                        Objects.requireNonNull(novoCliente.id(), "Unexpected state: novoCliente.id() is null"), clock.localDateTime());
-            }
+            newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(
+                    Objects.requireNonNull(param.nomeCliente(), "Unexpected state: nomeCliente is null"), clock.localDateTime());
         }
 
         return carrinhoGateway.salvarCarrinhoVazio(newCarrinho);
@@ -153,26 +141,6 @@ public class CarrinhoUseCases {
     private class RecuperarCarrinhoPolicy {
         Carrinho tryRecuperarCarrinho(IdCliente idCliente) {
             return carrinhoGateway.getCarrinhoSalvoByCliente(idCliente);
-        }
-    }
-
-    /**
-     * Política do fluxo de compra: Se foram informados dados completos cadastrar o cliente
-     */
-    private class SalvarClientePolicy {
-        Cliente salvarClienteSeDadosCompletos(CriarCarrinhoParam param) {
-            Cpf cpf = param.getCpfValidado();
-            if (StringUtils.isNotEmpty(param.nomeCliente()) && StringUtils.isNotEmpty(param.email()) && cpf != null) {
-                Cliente checkExistente = clienteGateway.getClienteByCpf(cpf);
-                if (checkExistente != null) {
-                    throw new IllegalArgumentException("Cliente com CPF " + param.cpf() + " já cadastrado");
-                }
-
-                Cliente newCliente = new Cliente(null, param.nomeCliente(), cpf, param.email());
-                return clienteGateway.salvarCliente(newCliente);
-            } else {
-                return null;
-            }
         }
     }
 }

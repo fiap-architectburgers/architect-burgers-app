@@ -1,6 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.auth;
 
-import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
+import com.example.gomesrodris.archburgers.adapters.externalsystem.AwsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Objects;
 
 @Service
 public class CognitoJwksApi {
@@ -21,13 +20,7 @@ public class CognitoJwksApi {
 
     @Autowired
     public CognitoJwksApi(Environment environment) {
-        String awsRegion = environment.getProperty("archburgers.integration.cognito.awsRegion");
-        String userPoolId = environment.getProperty("archburgers.integration.cognito.userPoolId");
-
-        if (StringUtils.isEmpty(awsRegion))
-            throw new IllegalStateException("archburgers.integration.cognito.awsRegion not set");
-        if (StringUtils.isEmpty(userPoolId))
-            throw new IllegalStateException("archburgers.integration.cognito.userPoolId not set");
+        AwsConfig awsConfig = AwsConfig.loadFromEnv(environment);
 
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
@@ -39,7 +32,8 @@ public class CognitoJwksApi {
          *
          * As specified in https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
          */
-        String uriStr = String.format("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", awsRegion, userPoolId);
+        String uriStr = String.format("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json",
+                awsConfig.getAwsRegion(), awsConfig.getCognitoUserPoolId());
 
         try {
             jwksEndpointURI = new URI(uriStr);

@@ -1,10 +1,16 @@
 # ### ### ### ### Etapa "0" - Identificação do cliente (opcional)
-# # # O serviço /cliente?cpf retorna as informações salvas do cliente.
-# # # Frontend deverá apresentar para o cliente para confirmação e guardar ID do cliente para o próximo passo
+# O serviço /cliente/conectado retorna as informações salvas do cliente.
+# Frontend deverá apresentar para o cliente para confirmação e guardar ID do cliente para o próximo passo
+#
+# (NOVO A PARTIR DA FASE 3)
+# É necessário passar pela Autenticação para consumir este endpoint. O Authenticator irá fornecer o IdToken no header
+# customizado IdentityToken
 ###
 # @name Identifica Cliente
 # Identificar cliente pelo CPF
-GET {{baseUrl}}/cliente?cpf=12332112340
+GET {{baseUrl}}/cliente/conectado
+IdentityToken: eyJraWQiOiJCaWhza093YkpITWxjM3E5XC9oNzZZYUpZNFNLT0NYaDNzXC9NSDU1K0tGNFU9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIxNGM4MjQ5OC02MDIxLTcwODItNTQ4Zi1mOTFlMDdkZmI5YWIiLCJjb2duaXRvOmdyb3VwcyI6WyJDbGllbnRlQ2FkYXN0cmFkbyJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9VbWZBNUhiQkEiLCJjb2duaXRvOnVzZXJuYW1lIjoiMTRjODI0OTgtNjAyMS03MDgyLTU0OGYtZjkxZTA3ZGZiOWFiIiwib3JpZ2luX2p0aSI6Ijc5MWFhODA2LWM3MTMtNDMwZS05ZGMxLWYwY2JjNDdjMTU5ZCIsImF1ZCI6IjFqcW5nbDZuYzVxdG5qODV1NDdtYzQ4bnNzIiwiZXZlbnRfaWQiOiJlOTlmNjQxMy0yNDBhLTRlZTUtYmVhZi01NzA2MjZjNjJmOTAiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTcyNTMxMjU5OSwibmFtZSI6IkR1ZHVIYW1idXJnZXIiLCJleHAiOjE3MjUzMTYxOTksImN1c3RvbTpjcGYiOiIxMjMzMjExMjM0MCIsImlhdCI6MTcyNTMxMjU5OSwianRpIjoiM2M3MTQ5Y2ItZDZjYy00ZGE1LWEwZGEtNjllMGMwMjUxMzVhIiwiZW1haWwiOiJkdWR1QGV4YW1wbGUuY29tIn0.AvJWi5x9QwTXFOsFkuT5zPDBzMbZxXgr6sPtFEtIozid1ukEaCKak_2VQsjKP6TzuyMad0h3_8396NKOx8xjSerx36d1vU_eeyyensQBTESYTcf9vTNOov7YTl8hbbNwMUQy0JkVp445XMUvnXDazBPKPuZbDfqulIWCT5zJj1OVlQn2L0Ydw6KEd8GtAAqblIibnl8k1c1ZtNsSIpT3fvTMrlM8nRj5Zs2KrpWpav4jGGLzh0tZmPmWuaBkJSZ4cHl9f19Ty5EG4HFihXDbsuT6TdyuvNVSVlhfHHyfZupaMv45ysT3I5kPNYK3DypnjiNBZTB0qTjA8fSSLuI_fQ
+
 
 # ### ### ### ### A primeira etapa é iniciar um novo carrinho de compras
 # # # Há 3 opções para iniciar o carrinho:
@@ -12,6 +18,7 @@ GET {{baseUrl}}/cliente?cpf=12332112340
 ###
 # @name Carrinho opção 1: Novo carrinho cliente identificado
 # Cria um novo carrinho utilizando identificação pelo ID do cliente
+# (NOVO A PARTIR DA FASE 3) Requer cliente autenticado
 POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
@@ -179,10 +186,24 @@ POST {{baseUrl}}/pedidos/13/setPronto
 # @name Finalizar pedido
 POST {{baseUrl}}/pedidos/13/finalizar
 
+# # #
+# # # ######### Serviços administrativos
 
+###
+# @name CADASTRAR CLIENTE
+# (NOVO A PARTIR DA FASE 3)
+# Cadastra um cliente na base e no serviço de autenticação externo
+POST {{baseUrl}}/clientes
+Content-Type: application/json
 
-### ######### Serviços administrativos
+{
+  "nome": "Dudu Segundo",
+  "cpf": "22233344405",
+  "email": "dudu_2@example.com",
+  "senha": "burger2"
+}
 
+###
 # @name Listar todos os pedidos ativos
 GET {{baseUrl}}/pedidos
 
