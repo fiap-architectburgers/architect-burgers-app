@@ -1,6 +1,7 @@
 package com.example.gomesrodris.archburgers.controller;
 
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.HistoricoPedidosGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
@@ -20,9 +21,10 @@ public class PedidoController {
     public PedidoController(PedidoGateway pedidoGateway, CarrinhoGateway carrinhoGateway,
                             ItemCardapioGateway itemCardapioGateway,
                             PagamentoUseCases pagamentoUseCases,
+                            HistoricoPedidosGateway historicoPedidosGateway,
                             Clock clock, PainelPedidos painelPedidos) {
         pedidoUseCases = new PedidoUseCases(pedidoGateway, carrinhoGateway, itemCardapioGateway,
-                pagamentoUseCases, clock, painelPedidos);
+                pagamentoUseCases, historicoPedidosGateway, clock, painelPedidos);
     }
 
     public Pedido criarPedido(CriarPedidoParam param) {
@@ -59,4 +61,6 @@ public class PedidoController {
     public Pedido finalizarPedido(Integer idPedido) {
         return pedidoUseCases.finalizarPedido(idPedido);
     }
+
+    public void arquivarPedidos(Integer dias) { pedidoUseCases.arquivarPedidos(dias); }
 }

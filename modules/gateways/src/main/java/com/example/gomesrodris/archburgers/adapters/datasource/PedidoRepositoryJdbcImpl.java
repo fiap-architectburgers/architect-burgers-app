@@ -62,9 +62,19 @@ public class PedidoRepositoryJdbcImpl implements PedidoDataSource {
             """;
 
     @Language("SQL")
+    private static final String SQL_DELETE_PEDIDO = """
+            DELETE from pedido where pedido_id = ?;
+            """;
+
+    @Language("SQL")
     private static final String SQL_INSERT_ITEM = """
             insert into pedido_item (pedido_id, item_cardapio_id, num_sequencia)
             values (?,?,?);
+            """;
+
+    @Language("SQL")
+    private static final String SQL_DELETE_ITEM = """
+            DELETE from pedido_item where pedido_id = ?;
             """;
 
     @Language("SQL")
@@ -211,5 +221,26 @@ public class PedidoRepositoryJdbcImpl implements PedidoDataSource {
                 formaPagamento,
                 rs.getTimestamp("data_hora_pedido").toLocalDateTime()
         );
+    }
+
+    @Override
+    public void deletePedido(Integer idPedido) {
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_DELETE_PEDIDO);
+             var stmtItem = connection.prepareStatement(SQL_DELETE_ITEM)) {
+
+            if ((idPedido != null) && (idPedido > 0)) {
+                stmt.setInt(1, idPedido);
+                stmtItem.setInt(1, idPedido);
+            } else {
+                throw new IllegalStateException("Unexpected idPedido, query should return");
+            }
+            stmtItem.executeUpdate();
+            stmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
     }
 }

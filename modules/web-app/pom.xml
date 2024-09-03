@@ -95,6 +95,9 @@
                         <archburgers.datasource.dbUser>live</archburgers.datasource.dbUser>
                         <archburgers.datasource.dbPass>live</archburgers.datasource.dbPass>
 
+                        <archburgers.datasource-mongodb.uri>mongodb+srv://fiapdbuser:fiapdbuser@techchallengecluster.aamvo.mongodb.net/?retryWrites=true&amp;w=majority&amp;appName=techchallengecluster</archburgers.datasource-mongodb.uri>
+                        <archburgers.datasource-mongodb.database>techchallengedb</archburgers.datasource-mongodb.database>
+
                         <archburgers.integration.mercadopago.apiBaseUrl>https://api.mercadopago.com</archburgers.integration.mercadopago.apiBaseUrl>
                         <archburgers.integration.mercadopago.userId>1898521889</archburgers.integration.mercadopago.userId>
                         <archburgers.integration.mercadopago.accessToken>APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889</archburgers.integration.mercadopago.accessToken>

@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.HistoricoPedidosGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
@@ -37,6 +38,8 @@ class PedidoUseCasesTest {
     @Mock
     private PagamentoUseCases pagamentoUseCases;
     @Mock
+    private HistoricoPedidosGateway historicoPedidosGateway;
+    @Mock
     private Clock clock;
     @Mock
     private PainelPedidos painelPedidos;
@@ -47,7 +50,7 @@ class PedidoUseCasesTest {
     void setUp() {
         pedidoUseCases = new PedidoUseCases(
                 pedidoGateway, carrinhoGateway, itemCardapioGateway,
-                pagamentoUseCases,
+                pagamentoUseCases, historicoPedidosGateway,
                 clock, painelPedidos);
     }
 

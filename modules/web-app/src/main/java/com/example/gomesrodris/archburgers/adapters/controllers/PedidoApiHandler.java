@@ -6,6 +6,7 @@ import com.example.gomesrodris.archburgers.adapters.presenters.PedidoPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.PedidoController;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarPedidoParam;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
@@ -144,5 +145,19 @@ public class PedidoApiHandler {
         }
 
         return WebUtils.okResponse(PedidoPresenter.entityToPresentationDto(pedido));
+    }
+
+    @PostMapping(value = "/pedidos/historico/arquivarPedidos/{dias}")
+    public ResponseEntity arquivarPedidos(@PathVariable("dias") Integer dias) {
+        try {
+            pedidoController.arquivarPedidos(dias);
+            return ResponseEntity.ok().build();
+
+        } catch (DomainArgumentException ae) {
+            return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, ae.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Ocorreu um erro ao obter pedido: {}", e, e);
+            return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao obter pedido");
+        }
     }
 }
