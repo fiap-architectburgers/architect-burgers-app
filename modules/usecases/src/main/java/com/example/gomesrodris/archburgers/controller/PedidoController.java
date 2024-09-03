@@ -1,9 +1,12 @@
 package com.example.gomesrodris.archburgers.controller;
 
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarPedidoParam;
 import com.example.gomesrodris.archburgers.domain.usecases.PagamentoUseCases;
@@ -19,14 +22,15 @@ public class PedidoController {
 
     public PedidoController(PedidoGateway pedidoGateway, CarrinhoGateway carrinhoGateway,
                             ItemCardapioGateway itemCardapioGateway,
+                            ClienteGateway clienteGateway,
                             PagamentoUseCases pagamentoUseCases,
                             Clock clock, PainelPedidos painelPedidos) {
-        pedidoUseCases = new PedidoUseCases(pedidoGateway, carrinhoGateway, itemCardapioGateway,
+        pedidoUseCases = new PedidoUseCases(pedidoGateway, carrinhoGateway, clienteGateway, itemCardapioGateway,
                 pagamentoUseCases, clock, painelPedidos);
     }
 
-    public Pedido criarPedido(CriarPedidoParam param) {
-        return pedidoUseCases.criarPedido(param);
+    public Pedido criarPedido(CriarPedidoParam param, UsuarioLogado usuarioLogado) throws DomainPermissionException {
+        return pedidoUseCases.criarPedido(param, usuarioLogado);
     }
 
     public List<Pedido> listarPedidosByStatus(@Nullable StatusPedido filtroStatus) {

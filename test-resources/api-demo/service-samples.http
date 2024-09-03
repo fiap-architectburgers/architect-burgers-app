@@ -13,7 +13,6 @@ IdentityToken: eyJraWQiOiJCaWhza093YkpITWxjM3E5XC9oNzZZYUpZNFNLT0NYaDNzXC9NSDU1K
 
 
 # ### ### ### ### A primeira etapa é iniciar um novo carrinho de compras
-# # # Há 3 opções para iniciar o carrinho:
 
 ###
 # @name Carrinho opção 1: Novo carrinho cliente identificado
@@ -23,18 +22,19 @@ POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
-  "idCliente": 1
+
 }
 
 ###
 # @name Carrinho existente cliente identificado
 # Nota: Se o cliente identificado solicitar a criação de um carrinho, e já existe um carrinho aberto
 #       para o mesmo, o sistema oferece o recurso de recuperar este carrinho existente. Permite continuar em caso de falha.
+# (NOVO A PARTIR DA FASE 3) Requer cliente autenticado
 POST {{baseUrl}}/carrinho
 Content-Type: application/json
 
 {
-  "idCliente": 2
+
 }
 
 ###
@@ -46,19 +46,6 @@ Content-Type: application/json
 
 {
   "nomeCliente": "Rodrigo Silva"
-}
-
-###
-# @name Carrinho opção 3 - Novo carrinho e cadastrar cliente
-# Recebe os dados completos do cliente, o pedido será feito como um Cliente Identificado e a partir da próxima compra
-# poderá usar a identificação por CPF
-POST {{baseUrl}}/carrinho
-Content-Type: application/json
-
-{
-  "nomeCliente": "Cliente Maria",
-  "cpf": "11122233396",
-  "email": "maria.cliente@example.org"
 }
 
 

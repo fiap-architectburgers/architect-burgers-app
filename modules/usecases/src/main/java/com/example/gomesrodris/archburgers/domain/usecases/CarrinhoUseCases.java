@@ -1,12 +1,16 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
+import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
+import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,14 +37,19 @@ public class CarrinhoUseCases {
         this.recuperarCarrinhoPolicy = new RecuperarCarrinhoPolicy();
     }
 
-    public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param) {
-        boolean clienteIdentificado = param.isClienteIdentificado();
+    public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param, @NotNull UsuarioLogado usuarioLogado) {
+        IdCliente idClienteLogado;
+        if (usuarioLogado.autenticado()) {
+            var clienteRegistrado = clienteGateway.getClienteByCpf(new Cpf(usuarioLogado.getCpf()));
+            if (clienteRegistrado == null)
+                throw new RuntimeException("Registro inconsistente! Usuario logado [" + usuarioLogado.getCpf() + "] não cadastrado na base");
+            idClienteLogado = clienteRegistrado.id();
+        } else {
+            idClienteLogado = null;
+        }
 
-        param.getCpfValidado(); // Throw early if invalid
-
-        if (clienteIdentificado) {
-            var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(
-                    new IdCliente(Objects.requireNonNull(param.idCliente(), "Unexpected state: idCliente is null")));
+        if (idClienteLogado != null) {
+            var carrinhoSalvo = recuperarCarrinhoPolicy.tryRecuperarCarrinho(idClienteLogado);
             if (carrinhoSalvo != null) {
                 var itens = itemCardapioGateway.findByCarrinho(Objects.requireNonNull(carrinhoSalvo.id(), "Object from database should have ID"));
                 return carrinhoSalvo.withItens(itens);
@@ -48,17 +57,14 @@ public class CarrinhoUseCases {
         }
 
         Carrinho newCarrinho;
-        if (clienteIdentificado) {
-            var cliente = clienteGateway.getClienteById(param.idCliente());
-            if (cliente == null) {
-                throw new IllegalArgumentException("Cliente invalido! " + param.idCliente());
-            }
-
+        if (idClienteLogado != null) {
             newCarrinho = Carrinho.newCarrinhoVazioClienteIdentificado(
-                    Objects.requireNonNull(cliente.id(), "Unexpected state: cliente.id() is null"), clock.localDateTime());
+                    idClienteLogado, clock.localDateTime());
         } else {
-            newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(
-                    Objects.requireNonNull(param.nomeCliente(), "Unexpected state: nomeCliente is null"), clock.localDateTime());
+            if (StringUtils.isEmpty(param.nomeCliente()))
+                throw new DomainArgumentException("Cliente não autenticado deve informar o nomeCliente");
+
+            newCarrinho = Carrinho.newCarrinhoVazioClienteNaoIdentificado(param.nomeCliente(), clock.localDateTime());
         }
 
         return carrinhoGateway.salvarCarrinhoVazio(newCarrinho);

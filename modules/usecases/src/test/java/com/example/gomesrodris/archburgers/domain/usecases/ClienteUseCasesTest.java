@@ -4,6 +4,7 @@ import com.example.gomesrodris.archburgers.domain.auth.GrupoUsuario;
 import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
+import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
 import com.example.gomesrodris.archburgers.domain.external.ProvedorAutenticacaoExterno;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CadastrarClienteParam;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
@@ -36,7 +37,7 @@ class ClienteUseCasesTest {
         when(cred.authError()).thenReturn("Não logado");
 
         assertThat(
-                assertThrows(IllegalArgumentException.class,
+                assertThrows(DomainPermissionException.class,
                         () -> clienteUseCases.getClienteByCredencial(cred))
         ).hasMessage("Usuário logado inválido. Não logado");
     }
@@ -48,13 +49,13 @@ class ClienteUseCasesTest {
         when(cred.getGrupo()).thenReturn(GrupoUsuario.ClienteAnonimo);
 
         assertThat(
-                assertThrows(IllegalArgumentException.class,
+                assertThrows(DomainPermissionException.class,
                         () -> clienteUseCases.getClienteByCredencial(cred))
         ).hasMessage("Usuário logado inválido. Não pertence ao grupo ClienteCadastrado");
     }
 
     @Test
-    void getClienteByCredencial_ok() {
+    void getClienteByCredencial_ok() throws DomainPermissionException {
         var cred = mock(UsuarioLogado.class);
         when(cred.autenticado()).thenReturn(true);
         when(cred.getGrupo()).thenReturn(GrupoUsuario.ClienteCadastrado);

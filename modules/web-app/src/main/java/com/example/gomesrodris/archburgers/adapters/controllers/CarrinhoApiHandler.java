@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.controllers;
 
+import com.example.gomesrodris.archburgers.adapters.auth.UsuarioLogadoTokenParser;
 import com.example.gomesrodris.archburgers.adapters.datasource.TransactionManager;
 import com.example.gomesrodris.archburgers.adapters.dto.AddItemCarrinhoDto;
 import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoDto;
@@ -7,12 +8,14 @@ import com.example.gomesrodris.archburgers.adapters.dto.CarrinhoObservacoesDto;
 import com.example.gomesrodris.archburgers.adapters.presenters.CarrinhoPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.CarrinhoController;
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +28,15 @@ public class CarrinhoApiHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarrinhoApiHandler.class);
 
     private final CarrinhoController carrinhoController;
+    private final UsuarioLogadoTokenParser usuarioLogadoTokenParser;
     private final TransactionManager transactionManager;
 
     @Autowired
-    public CarrinhoApiHandler(CarrinhoController carrinhoController, TransactionManager transactionManager) {
+    public CarrinhoApiHandler(CarrinhoController carrinhoController,
+                              UsuarioLogadoTokenParser usuarioLogadoTokenParser,
+                              TransactionManager transactionManager) {
         this.carrinhoController = carrinhoController;
+        this.usuarioLogadoTokenParser = usuarioLogadoTokenParser;
         this.transactionManager = transactionManager;
     }
 
@@ -60,11 +67,14 @@ public class CarrinhoApiHandler {
     """)
     @PostMapping(path = "/carrinho")
     public ResponseEntity<CarrinhoDto> iniciarCarrinho(
+            @RequestHeader HttpHeaders headers,
             @RequestBody CriarCarrinhoParam param) {
 
         Carrinho carrinho;
         try {
-            carrinho = transactionManager.runInTransaction(() -> carrinhoController.criarCarrinho(param));
+            UsuarioLogado usuarioLogado = usuarioLogadoTokenParser.verificarUsuarioLogado(headers);
+
+            carrinho = transactionManager.runInTransaction(() -> carrinhoController.criarCarrinho(param, usuarioLogado));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.controller;
 
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
@@ -23,8 +24,8 @@ public class CarrinhoController {
         return carrinhoUseCases.findCarrinho(idCarrinho);
     }
 
-    public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param) {
-        return carrinhoUseCases.criarCarrinho(param);
+    public Carrinho criarCarrinho(@NotNull CriarCarrinhoParam param, @NotNull UsuarioLogado usuarioLogado) {
+        return carrinhoUseCases.criarCarrinho(param, usuarioLogado);
     }
 
     public Carrinho addItem(int idCarrinho, int idItemCardapio) {

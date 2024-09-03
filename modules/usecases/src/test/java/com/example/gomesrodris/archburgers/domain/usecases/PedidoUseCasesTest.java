@@ -1,14 +1,14 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
-import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
-import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
-import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
-import com.example.gomesrodris.archburgers.domain.entities.Pedido;
-import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
-import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
+import com.example.gomesrodris.archburgers.domain.entities.*;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
+import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
+import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarPedidoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.*;
@@ -23,8 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PedidoUseCasesTest {
@@ -34,6 +33,8 @@ class PedidoUseCasesTest {
     private CarrinhoGateway carrinhoGateway;
     @Mock
     private ItemCardapioGateway itemCardapioGateway;
+    @Mock
+    private ClienteGateway clienteGateway;
     @Mock
     private PagamentoUseCases pagamentoUseCases;
     @Mock
@@ -46,32 +47,38 @@ class PedidoUseCasesTest {
     @BeforeEach
     void setUp() {
         pedidoUseCases = new PedidoUseCases(
-                pedidoGateway, carrinhoGateway, itemCardapioGateway,
+                pedidoGateway, carrinhoGateway, clienteGateway, itemCardapioGateway,
                 pagamentoUseCases,
                 clock, painelPedidos);
     }
 
     @Test
     void criarPedido_missingParam() {
-        assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(null));
+        var usuarioLogado = mock(UsuarioLogado.class);
+
+        assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(null, usuarioLogado));
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new CriarPedidoParam(null, "DINHEIRO")));
+                new CriarPedidoParam(null, "DINHEIRO"), usuarioLogado));
         assertThrows(IllegalArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new CriarPedidoParam(12, "")));
+                new CriarPedidoParam(12, ""), usuarioLogado));
     }
 
     @Test
     void criarPedido_invalidPagamento() {
+        var usuarioLogado = mock(UsuarioLogado.class);
+
         when(pagamentoUseCases.validarFormaPagamento("Cheque")).thenThrow(
                 new DomainArgumentException("Forma de pagamento inválida: Cheque"));
 
         assertThat(assertThrows(DomainArgumentException.class, () -> pedidoUseCases.criarPedido(
-                new CriarPedidoParam(12, "Cheque")))
+                new CriarPedidoParam(12, "Cheque"), usuarioLogado))
         ).hasMessage("Forma de pagamento inválida: Cheque");
     }
 
     @Test
     void criarPedido_ok() {
+        var usuarioLogado = mockUsuarioLogado("12332112340");
+
         when(carrinhoGateway.getCarrinho(12)).thenReturn(
                 Carrinho.carrinhoSalvoClienteIdentificado(12, new IdCliente(25),
                         "Lanche sem cebola",
@@ -85,6 +92,9 @@ class PedidoUseCasesTest {
                         new ItemCardapio(1001, TipoItemCardapio.BEBIDA, "Refrigerante", "Refrigerante", new ValorMonetario("5.00"))
                 )
         ));
+        when(clienteGateway.getClienteByCpf(new Cpf("12332112340"))).thenReturn(new Cliente(new IdCliente(25),
+                "Mesmo Cliente", new Cpf("12332112340"), "mesmo.cliente@example.com"));
+
         when(clock.localDateTime()).thenReturn(dateTime);
         when(pagamentoUseCases.validarFormaPagamento("DINHEIRO")).thenReturn(IdFormaPagamento.DINHEIRO);
 
@@ -100,11 +110,32 @@ class PedidoUseCasesTest {
         when(pedidoGateway.savePedido(expectedPedido)).thenReturn(expectedPedido.withId(33));
 
         var result = pedidoUseCases.criarPedido(
-                new CriarPedidoParam(12, "DINHEIRO"));
+                new CriarPedidoParam(12, "DINHEIRO"), usuarioLogado);
 
         assertThat(result).isEqualTo(expectedPedido.withId(33));
 
         verify(pagamentoUseCases).iniciarPagamento(expectedPedido.withId(33));
+    }
+
+    @Test
+    void criarPedido_clienteLogadoIncorreto() {
+        var usuarioLogado = mockUsuarioLogado("12332112340");
+
+        when(clienteGateway.getClienteByCpf(new Cpf("12332112340"))).thenReturn(new Cliente(new IdCliente(42),
+                "Outro Cliente", new Cpf("12332112340"), "outro.cliente@example.com"));
+
+        when(carrinhoGateway.getCarrinho(12)).thenReturn(
+                Carrinho.carrinhoSalvoClienteIdentificado(12, new IdCliente(25),
+                        "Lanche sem cebola",
+                        LocalDateTime.of(2024, 5, 18, 14, 0))
+        );
+
+        when(pagamentoUseCases.validarFormaPagamento("DINHEIRO")).thenReturn(IdFormaPagamento.DINHEIRO);
+
+        assertThat(
+                assertThrows(DomainPermissionException.class, () -> pedidoUseCases.criarPedido(
+                        new CriarPedidoParam(12, "DINHEIRO"), usuarioLogado))
+        ).hasMessage("Carrinho 12 não pertence ao cliente 42/12332112340");
     }
 
     @Test
@@ -221,6 +252,17 @@ class PedidoUseCasesTest {
                         List.of(), null, StatusPedido.PREPARACAO,
                         IdFormaPagamento.DINHEIRO, dateTime)
         );
+    }
+
+    private UsuarioLogado mockUsuarioLogado(String cpf) {
+        UsuarioLogado usuarioLogado = mock(UsuarioLogado.class);
+        if (cpf == null) {
+            when(usuarioLogado.autenticado()).thenReturn(false);
+        } else {
+            when(usuarioLogado.getCpf()).thenReturn(cpf);
+            when(usuarioLogado.autenticado()).thenReturn(true);
+        }
+        return usuarioLogado;
     }
 
     ///////////

@@ -52,11 +52,12 @@ public class DomainServiceBeans {
     public PedidoController pedidoController(CarrinhoGateway carrinhoGateway,
                                              ItemCardapioGateway itemCardapioGateway,
                                              PedidoGateway pedidoGateway,
+                                             ClienteGateway clienteGateway,
                                              PagamentoUseCases pagamentoUseCases,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
         return new PedidoController(pedidoGateway, carrinhoGateway, itemCardapioGateway,
-                pagamentoUseCases, clock, painelPedidos);
+                clienteGateway, pagamentoUseCases, clock, painelPedidos);
     }
 
     @Bean
