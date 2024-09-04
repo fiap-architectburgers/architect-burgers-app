@@ -8,10 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminConfirmSignUpRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import javax.crypto.Mac;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +18,8 @@ import java.util.List;
 
 @Service
 public class ProvedorAutenticacaoCognito implements ProvedorAutenticacaoExterno, AutoCloseable {
+    private static final String GRUPO_CLIENTES = "ClienteCadastrado";
+
     private final AwsConfig awsConfig;
     private final CognitoIdentityProviderClient cognitoClient;
 
@@ -63,6 +62,14 @@ public class ProvedorAutenticacaoCognito implements ProvedorAutenticacaoExterno,
 
             cognitoClient.adminConfirmSignUp(confirmSignUpRequest);
         }
+
+        AdminAddUserToGroupRequest addUserToGroupRequest = AdminAddUserToGroupRequest.builder()
+                .username(cliente.email())
+                .userPoolId(awsConfig.getCognitoUserPoolId())
+                .groupName(GRUPO_CLIENTES)
+                .build();
+
+        cognitoClient.adminAddUserToGroup(addUserToGroupRequest);
     }
 
     private static String secretHash(String userName, String clientId, String clientSecret) {
