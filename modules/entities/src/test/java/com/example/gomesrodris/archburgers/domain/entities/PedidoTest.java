@@ -25,7 +25,7 @@ class PedidoTest {
 
         var newP = p.validar();
 
-        assertThat(newP.status()).isEqualTo(StatusPedido.PRONTO);
+        assertThat(newP.status()).isEqualTo(StatusPedido.PREPARACAO);
     }
 
     @Test

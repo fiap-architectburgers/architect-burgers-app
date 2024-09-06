@@ -19,7 +19,7 @@ class CpfTest {
 
         // DV invalido
         assertThrows(IllegalArgumentException.class, () -> new Cpf("12332112339"));
-        assertThrows(IllegalArgumentException.class, () -> new Cpf("1233211xx41"));
+        assertThrows(IllegalArgumentException.class, () -> new Cpf("12332112341"));
         assertThrows(IllegalArgumentException.class, () -> new Cpf("12332112330"));
         assertThrows(IllegalArgumentException.class, () -> new Cpf("12332112350"));
         assertThrows(IllegalArgumentException.class, () -> new Cpf("99988877713"));
