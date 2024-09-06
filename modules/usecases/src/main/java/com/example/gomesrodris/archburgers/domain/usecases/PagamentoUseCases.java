@@ -110,4 +110,8 @@ public class PagamentoUseCases {
     public Pagamento consultarPagamento(int idPedido) {
         return pagamentoGateway.findPagamentoByPedido(idPedido);
     }
+
+    public void excluirPagamentoDoPedido(int idPedido) {
+        pagamentoGateway.excluirPagamento(idPedido);
+    }
 }

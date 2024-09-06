@@ -1,10 +1,7 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
 import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
-import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
-import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
-import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
-import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.*;
 import com.example.gomesrodris.archburgers.domain.entities.*;
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
@@ -38,6 +35,8 @@ class PedidoUseCasesTest {
     @Mock
     private PagamentoUseCases pagamentoUseCases;
     @Mock
+    private HistoricoPedidosGateway historicoPedidosGateway;
+    @Mock
     private Clock clock;
     @Mock
     private PainelPedidos painelPedidos;
@@ -48,7 +47,7 @@ class PedidoUseCasesTest {
     void setUp() {
         pedidoUseCases = new PedidoUseCases(
                 pedidoGateway, carrinhoGateway, clienteGateway, itemCardapioGateway,
-                pagamentoUseCases,
+                pagamentoUseCases, historicoPedidosGateway,
                 clock, painelPedidos);
     }
 

@@ -3,8 +3,10 @@ package com.example.gomesrodris.archburgers.domain.usecases;
 import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
+import com.example.gomesrodris.archburgers.domain.datagateway.HistoricoPedidosGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
+import com.example.gomesrodris.archburgers.domain.entities.Pagamento;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
 import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
 import com.example.gomesrodris.archburgers.domain.external.PainelPedidos;
@@ -16,6 +18,9 @@ import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPedido;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -26,19 +31,21 @@ public class PedidoUseCases {
     private final ClienteGateway clienteGateway;
     private final ItemCardapioGateway itemCardapioGateway;
     private final PagamentoUseCases pagamentoUseCases;
+    private final HistoricoPedidosGateway historicoPedidosGateway;
     private final Clock clock;
     private final PainelPedidos painelPedidos;
 
     public PedidoUseCases(PedidoGateway pedidoGateway, CarrinhoGateway carrinhoGateway, ClienteGateway clienteGateway,
                           ItemCardapioGateway itemCardapioGateway,
                           PagamentoUseCases pagamentoUseCases,
+                          HistoricoPedidosGateway historicoPedidosGateway,
                           Clock clock, PainelPedidos painelPedidos) {
         this.pedidoGateway = pedidoGateway;
         this.carrinhoGateway = carrinhoGateway;
         this.clienteGateway = clienteGateway;
         this.itemCardapioGateway = itemCardapioGateway;
         this.pagamentoUseCases = pagamentoUseCases;
-
+        this.historicoPedidosGateway = historicoPedidosGateway;
         this.clock = clock;
         this.painelPedidos = painelPedidos;
     }
@@ -151,5 +158,36 @@ public class PedidoUseCases {
         var itens = itemCardapioGateway.findByPedido(idPedido);
 
         return atualizado.withItens(itens);
+    }
+
+    public void arquivarPedidos(Integer dias)  {
+
+        List<Pedido>  pedidosAntigos = listarPedidosAntigos(dias);
+
+        List<Pagamento>  pagamentosAntigos = new ArrayList<>();
+        for (Pedido pedidoAntigo : pedidosAntigos){
+            pagamentosAntigos.add(pagamentoUseCases.consultarPagamento(pedidoAntigo.id()));
+        }
+        historicoPedidosGateway.arquivarPedidos(pedidosAntigos, pagamentosAntigos);
+
+        for (Pedido pedidoAntigo : pedidosAntigos){
+            pagamentoUseCases.excluirPagamentoDoPedido(pedidoAntigo.id());
+            excluirPedido(pedidoAntigo.id());
+        }
+    }
+
+    private List<Pedido> listarPedidosAntigos(Integer dias) {
+        LocalDateTime localDateTime = LocalDateTime.now().minusDays(dias);
+
+        var pedidos = pedidoGateway.listPedidos(Arrays.stream(StatusPedido.values()).toList(), localDateTime);
+
+        return pedidos.stream().map(p -> {
+            var itens = itemCardapioGateway.findByPedido(Objects.requireNonNull(p.id(), "Expected pedidos to have ID"));
+            return p.withItens(itens);
+        }).toList();
+    }
+
+    public void excluirPedido(Integer idPedido)  {
+        pedidoGateway.excluirPedido(idPedido);
     }
 }

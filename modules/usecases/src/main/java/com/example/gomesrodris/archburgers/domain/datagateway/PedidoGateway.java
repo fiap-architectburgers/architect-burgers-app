@@ -16,4 +16,6 @@ public interface PedidoGateway {
                              @Nullable LocalDateTime olderThan);
 
     void updateStatus(Pedido pedido);
+
+    void excluirPedido(int idPedido);
 }

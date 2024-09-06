@@ -41,6 +41,11 @@ public class PagamentoRepositoryJdbcImpl implements PagamentoDataSource {
                      where pagamento_id = ?
             """;
 
+    @Language("SQL")
+    private static final String SQL_DELETE_BY_ID_PEDIDO = """
+                delete from pagamento where id_pedido = ?
+            """;
+
     private final DatabaseConnection databaseConnection;
 
     @Autowired
@@ -120,5 +125,25 @@ public class PagamentoRepositoryJdbcImpl implements PagamentoDataSource {
         } catch (SQLException e) {
             throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void deletePagamentoByIdPedido(Integer idPedido) {
+
+        try (var connection = databaseConnection.getConnection();
+             var stmt = connection.prepareStatement(SQL_DELETE_BY_ID_PEDIDO)) {
+
+            if ((idPedido != null) && (idPedido > 0)) {
+                stmt.setInt(1, idPedido);
+            } else {
+                throw new IllegalStateException("Unexpected idPedido, query should return");
+            }
+            stmt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException("(" + this.getClass().getSimpleName() + ") Database error: " + e.getMessage(), e);
+        }
+
     }
 }

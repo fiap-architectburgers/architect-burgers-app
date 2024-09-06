@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.datagateway.HistoricoPedidosGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PagamentoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.PedidoGateway;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.*;
 
 class PagamentoUseCasesTest {
     private PagamentoGateway pagamentoGateway;
+    private HistoricoPedidosGateway historicoPagamentoGateway;
     private PedidoGateway pedidoGateway;
     private ItemCardapioGateway itemCardapioGateway;
     private Clock clock;

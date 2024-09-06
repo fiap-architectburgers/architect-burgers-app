@@ -6,4 +6,5 @@ public interface PagamentoGateway {
     Pagamento findPagamentoByPedido(Integer idPedido);
     Pagamento salvarPagamento(Pagamento pagamento);
     void updateStatus(Pagamento pagamento);
+    void excluirPagamento(Integer idPedido);
 }

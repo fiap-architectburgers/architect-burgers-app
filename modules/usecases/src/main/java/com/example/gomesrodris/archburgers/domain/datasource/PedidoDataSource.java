@@ -16,4 +16,6 @@ public interface PedidoDataSource {
                              @Nullable LocalDateTime olderThan);
 
     void updateStatus(Pedido pedido);
+
+    void deletePedido(Integer idPedido);
 }

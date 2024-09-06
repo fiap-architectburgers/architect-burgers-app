@@ -37,4 +37,7 @@ public class PedidoGatewayImpl implements PedidoGateway {
     public void updateStatus(Pedido pedido) {
         pedidoDataSource.updateStatus(pedido);
     }
+
+    @Override
+    public void excluirPedido(int idPedido) { pedidoDataSource.deletePedido(idPedido); }
 }

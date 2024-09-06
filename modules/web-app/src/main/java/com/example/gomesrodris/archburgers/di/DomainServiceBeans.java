@@ -54,10 +54,11 @@ public class DomainServiceBeans {
                                              PedidoGateway pedidoGateway,
                                              ClienteGateway clienteGateway,
                                              PagamentoUseCases pagamentoUseCases,
+                                             HistoricoPedidosGateway historicoPagamentoGateway,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
         return new PedidoController(pedidoGateway, carrinhoGateway, itemCardapioGateway,
-                clienteGateway, pagamentoUseCases, clock, painelPedidos);
+                clienteGateway, pagamentoUseCases, historicoPagamentoGateway, clock, painelPedidos);
     }
 
     @Bean
@@ -75,6 +76,7 @@ public class DomainServiceBeans {
                                                    PagamentoGateway pagamentoGateway,
                                                    PedidoGateway pedidoGateway,
                                                    ItemCardapioGateway itemCardapioGateway,
+                                                   HistoricoPedidosGateway historicoPedidosGateway,
                                                    Clock clock) {
         return new PagamentoController(formaPagamentoRegistry, pagamentoGateway,
                 pedidoGateway, itemCardapioGateway, clock);

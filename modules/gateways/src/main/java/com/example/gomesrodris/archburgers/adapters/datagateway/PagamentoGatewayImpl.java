@@ -27,4 +27,9 @@ public class PagamentoGatewayImpl implements PagamentoGateway {
     public void updateStatus(Pagamento pagamento) {
         pagamentoDataSource.updateStatus(pagamento);
     }
+
+    @Override
+    public void excluirPagamento(Integer idPedido) {
+        pagamentoDataSource.deletePagamentoByIdPedido(idPedido);
+    }
 }
