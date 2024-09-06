@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.di;
 
+import com.example.gomesrodris.archburgers.adapters.externalsystem.ProvedorAutenticacaoCognito;
 import com.example.gomesrodris.archburgers.adapters.pagamento.MercadoPagoGateway;
 import com.example.gomesrodris.archburgers.adapters.presenters.QrCodePresenter;
 import com.example.gomesrodris.archburgers.controller.*;
@@ -27,8 +28,9 @@ public class DomainServiceBeans {
     }
 
     @Bean
-    public ClienteController clienteController(ClienteGateway clienteGateway) {
-        return new ClienteController(clienteGateway);
+    public ClienteController clienteController(ClienteGateway clienteGateway,
+                                               ProvedorAutenticacaoCognito provedorAutenticacaoCognito) {
+        return new ClienteController(clienteGateway, provedorAutenticacaoCognito);
     }
 
     @Bean
@@ -50,12 +52,13 @@ public class DomainServiceBeans {
     public PedidoController pedidoController(CarrinhoGateway carrinhoGateway,
                                              ItemCardapioGateway itemCardapioGateway,
                                              PedidoGateway pedidoGateway,
+                                             ClienteGateway clienteGateway,
                                              PagamentoUseCases pagamentoUseCases,
                                              HistoricoPedidosGateway historicoPagamentoGateway,
                                              Clock clock,
                                              PainelPedidos painelPedidos) {
         return new PedidoController(pedidoGateway, carrinhoGateway, itemCardapioGateway,
-                pagamentoUseCases, historicoPagamentoGateway, clock, painelPedidos);
+                clienteGateway, pagamentoUseCases, historicoPagamentoGateway, clock, painelPedidos);
     }
 
     @Bean

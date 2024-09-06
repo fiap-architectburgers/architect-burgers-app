@@ -1,11 +1,14 @@
 package com.example.gomesrodris.archburgers.adapters.controllers;
 
+import com.example.gomesrodris.archburgers.adapters.auth.UsuarioLogadoTokenParser;
 import com.example.gomesrodris.archburgers.adapters.datasource.TransactionManager;
 import com.example.gomesrodris.archburgers.adapters.dto.PedidoDto;
 import com.example.gomesrodris.archburgers.adapters.presenters.PedidoPresenter;
 import com.example.gomesrodris.archburgers.apiutils.WebUtils;
 import com.example.gomesrodris.archburgers.controller.PedidoController;
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.entities.Pedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainPermissionException;
 import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarPedidoParam;
 import com.example.gomesrodris.archburgers.domain.utils.StringUtils;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,24 +30,34 @@ public class PedidoApiHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(PedidoApiHandler.class);
 
     private final PedidoController pedidoController;
+    private final UsuarioLogadoTokenParser usuarioLogadoTokenParser;
     private final TransactionManager transactionManager;
 
     @Autowired
-    public PedidoApiHandler(PedidoController pedidoController, TransactionManager transactionManager) {
+    public PedidoApiHandler(PedidoController pedidoController,
+                            UsuarioLogadoTokenParser usuarioLogadoTokenParser,
+                            TransactionManager transactionManager) {
         this.pedidoController = pedidoController;
+        this.usuarioLogadoTokenParser = usuarioLogadoTokenParser;
         this.transactionManager = transactionManager;
     }
 
     @Operation(summary = "Cria um pedido a partir do carrinho informado",
             description = "O pedido recebe todos os itens do carrinho, e após a criação do pedido o carrinho é excluído")
     @PostMapping(path = "/pedidos")
-    public ResponseEntity<PedidoDto> criarPedido(@RequestBody CriarPedidoParam param) {
+    public ResponseEntity<PedidoDto> criarPedido(
+            @RequestHeader HttpHeaders headers,
+            @RequestBody CriarPedidoParam param) {
 
         Pedido pedido;
         try {
-            pedido = transactionManager.runInTransaction(() -> pedidoController.criarPedido(param));
+            UsuarioLogado usuarioLogado = usuarioLogadoTokenParser.verificarUsuarioLogado(headers);
+
+            pedido = transactionManager.runInTransaction(() -> pedidoController.criarPedido(param, usuarioLogado));
         } catch (IllegalArgumentException iae) {
             return WebUtils.errorResponse(HttpStatus.BAD_REQUEST, iae.getMessage());
+        } catch (DomainPermissionException dpe) {
+            return WebUtils.errorResponse(HttpStatus.FORBIDDEN, dpe.getMessage());
         } catch (Exception e) {
             LOGGER.error("Ocorreu um erro ao criar pedido: {}", e, e);
             return WebUtils.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao criar pedido");
