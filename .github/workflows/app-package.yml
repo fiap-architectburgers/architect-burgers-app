@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Maven Install and Copy libraries
-        run: mvn install dependency:copy-dependencies
+        run: mvn -DskipTests install dependency:copy-dependencies
       - name: Prepare app directory
         run: mkdir temp_libs && cp ./modules/web-app/target/architect-burgers-webapi-*.jar ./temp_libs/ && cp ./modules/web-app/target/lib/* ./temp_libs/
       - name: Archive app directory
@@ -26,12 +26,6 @@ jobs:
         with:
           name: app-libs-dir
           path: temp_libs/*
-          retention-days: 1
-      - name: Archive app directory withDir
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-libs-dir-2
-          path: temp_libs
           retention-days: 1
 
   check-artifacts:
@@ -42,13 +36,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-libs-dir
+          path: ./temp_libs/
       - name: LS1
-        run: ls -l
-      - name: Download a single artifact 2
-        uses: actions/download-artifact@v4
-        with:
-          name: app-libs-dir-2
-      - name: LS2
         run: ls -l
       - name: LS3
         run: ls -l ./temp_libs
+
