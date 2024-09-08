@@ -1,9 +1,6 @@
-name: app-test-and-build
-run-name: Testing and building ${{github.actor}}'s changes
-on:
-  push:
-    branches:
-      - temporarily_disabled
+name: run-unit-test
+run-name: Testing after ${{github.actor}}'s changes
+on: push
 jobs:
   mvn-test:
     runs-on: ubuntu-latest
