@@ -58,4 +58,4 @@ jobs:
         with:
           context: ./docker
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:latest,${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:${{PROJECT_VERSION}}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:latest,${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:${{env.PROJECT_VERSION}}
