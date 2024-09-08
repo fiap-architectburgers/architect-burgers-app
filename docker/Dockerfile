@@ -26,18 +26,19 @@ ENV archburgers.datasource.dbUrl=jdbc:postgresql://localhost/archburgers?autoRec
 ENV archburgers.datasource.dbUser=myDbUser
 ENV archburgers.datasource.dbPass=muDbPass
 
-ENV archburgers.datasource-mongodb.uri=mongodb://localhost/architectburgers
+ENV archburgers.datasource-mongodb.uri=mongodb://localhost/techchallengedb
+ENV archburgers.datasource-mongodb.database=techchallengedb
+
 ENV archburgers.integration.mercadopago.apiBaseUrl=https://api.mercadopago.com
 ENV archburgers.integration.mercadopago.userId=123456789
 ENV archburgers.integration.mercadopago.accessToken=APP_USR-0000000000000000
 ENV archburgers.integration.mercadopago.posId=LOJA1POS1
-ENV archburgers.integration.mercadopago.notificationUrl=https://gomesrodris-mplabs.requestcatcher.com/payment-hooks/mercadopago
+ENV archburgers.integration.mercadopago.notificationUrl=https://architectburgers-mplabs.requestcatcher.com/payment-hooks/mercadopago
 
 ENV archburgers.integration.aws.region=us-east-1
 ENV archburgers.integration.cognito.userPoolId=us-east-1_0000000
 ENV archburgers.integration.cognito.clientId=123456789abcdef
 ENV archburgers.integration.cognito.clientSecret=xxxxxxxxxxxxxxxxxxxxxx
-
 
 EXPOSE 8090
 
