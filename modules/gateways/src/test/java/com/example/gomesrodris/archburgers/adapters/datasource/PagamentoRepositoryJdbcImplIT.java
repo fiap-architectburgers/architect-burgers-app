@@ -1,7 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.datasource;
 
 import com.example.gomesrodris.archburgers.domain.entities.Pagamento;
-import com.example.gomesrodris.archburgers.domain.datagateway.PagamentoGateway;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdFormaPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.StatusPagamento;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
@@ -14,7 +13,10 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PagamentoRepositoryJdbcImplTest {
+/**
+ * Database Integration Tests
+ */
+class PagamentoRepositoryJdbcImplIT {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 

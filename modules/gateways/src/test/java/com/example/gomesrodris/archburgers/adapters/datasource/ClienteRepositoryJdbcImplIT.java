@@ -1,7 +1,6 @@
 package com.example.gomesrodris.archburgers.adapters.datasource;
 
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
-import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
 import com.example.gomesrodris.archburgers.domain.valueobjects.IdCliente;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
@@ -11,7 +10,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ClienteRepositoryJdbcImplTest {
+/**
+ * Database Integration Tests
+ */
+class ClienteRepositoryJdbcImplIT {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 

@@ -6,6 +6,8 @@ target/
 
 node_modules/
 
+playground/
+
 ### STS ###
 .apt_generated
 .classpath

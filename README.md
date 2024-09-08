@@ -38,7 +38,7 @@ Empacotamento da imagem docker:
 
 ```shell
 $ cd docker/
-$ ./build.sh
+$ ./build-local.sh
 # executar docker push se for uma versão release
 ```
 

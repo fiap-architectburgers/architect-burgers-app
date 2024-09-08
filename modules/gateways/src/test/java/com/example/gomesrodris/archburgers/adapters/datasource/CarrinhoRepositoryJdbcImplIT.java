@@ -17,7 +17,10 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CarrinhoRepositoryJdbcImplTest {
+/**
+ * Database Integration Tests
+ */
+class CarrinhoRepositoryJdbcImplIT {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 

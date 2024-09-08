@@ -17,7 +17,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PedidoRepositoryJdbcImplTest {
+/**
+ * Database Integration Tests
+ */
+class PedidoRepositoryJdbcImplIT {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 
