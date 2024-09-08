@@ -18,8 +18,20 @@ services:
       start_period: 5s
       timeout: 10s
 
+  mongodb:
+    image: mongo:8.0.0-rc20
+    container_name: archburgers_mongodb
+    hostname: archburgers_mongodb
+    restart: "no"   # Sem restart automático por ser um serviço com fins didáticos
+    healthcheck:
+      test: mongosh --eval 'show collections' mongodb://localhost/architectburgers
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
   app:
-    image: gomesrodris/architect-burgers:0.0.5
+    image: gomesrodris/architect-burgers:0.0.8
     container_name: archburgers_app
     restart: "no"
     environment:
@@ -28,11 +40,20 @@ services:
       "archburgers.datasource.dbUser": pguser
       "archburgers.datasource.dbPass": "216hdjkasda%jhjKaA"
 
+      "archburgers.datasource-mongodb.uri": mongodb://archburgers_mongodb/techchallengedb
+      "archburgers.datasource-mongodb.database": techchallengedb
+
       "archburgers.integration.mercadopago.apiBaseUrl": "https://api.mercadopago.com"
       "archburgers.integration.mercadopago.userId": "1898521889"
       "archburgers.integration.mercadopago.accessToken": "APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889"
       "archburgers.integration.mercadopago.posId": "LOJA1POS1"
-      "archburgers.integration.mercadopago.notificationUrl": "http://adb05a37e59fc490cb51d499977f381f-883088565.us-east-1.elb.amazonaws.com:8090/pagamento-webhook/mercado-pago"
+      "archburgers.integration.mercadopago.notificationUrl": "https://architectburgers-mplabs.requestcatcher.com/payment-hooks/mercadopago"
+
+      "archburgers.integration.aws.region": "us-east-1"
+      "archburgers.integration.cognito.userPoolId": "us-east-1_0000000"
+      "archburgers.integration.cognito.clientId": "123456789abcdef"
+      "archburgers.integration.cognito.clientSecret": "xxxxxxxxxxxxxxxxxxxxxx"
+
     ports:
       - "8090:8090"
     depends_on:
