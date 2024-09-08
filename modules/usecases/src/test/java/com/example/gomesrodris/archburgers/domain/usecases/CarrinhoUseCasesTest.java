@@ -1,5 +1,6 @@
 package com.example.gomesrodris.archburgers.domain.usecases;
 
+import com.example.gomesrodris.archburgers.domain.auth.UsuarioLogado;
 import com.example.gomesrodris.archburgers.domain.datagateway.CarrinhoGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ClienteGateway;
 import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
@@ -7,6 +8,7 @@ import com.example.gomesrodris.archburgers.domain.entities.Carrinho;
 import com.example.gomesrodris.archburgers.domain.entities.Cliente;
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
+import com.example.gomesrodris.archburgers.domain.exception.DomainArgumentException;
 import com.example.gomesrodris.archburgers.domain.usecaseparam.CriarCarrinhoParam;
 import com.example.gomesrodris.archburgers.domain.utils.Clock;
 import com.example.gomesrodris.archburgers.domain.valueobjects.Cpf;
@@ -23,8 +25,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CarrinhoUseCasesTest {
@@ -47,6 +49,8 @@ class CarrinhoUseCasesTest {
 
     @Test
     void criarCarrinho_clienteIdentificado_carrinhoExistente() {
+        when(clienteGateway.getClienteByCpf(new Cpf("12332112340"))).thenReturn(cliente123);
+
         when(carrinhoGateway.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(carrinhoSalvoCliente123);
 
         when(itemCardapioGateway.findByCarrinho(88)).thenReturn(List.of(
@@ -55,7 +59,10 @@ class CarrinhoUseCasesTest {
                 )
         ));
 
-        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(123, null, null, null));
+        UsuarioLogado usuarioLogado = mockUsuarioLogado("12332112340");
+
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null), usuarioLogado);
+
         assertThat(result).isEqualTo(carrinhoSalvoCliente123.withItens(List.of(
                         new ItemPedido(1,
                                 new ItemCardapio(1000, TipoItemCardapio.LANCHE, "Hamburger", "Hamburger", new ValorMonetario("25.90"))
@@ -66,15 +73,17 @@ class CarrinhoUseCasesTest {
 
     @Test
     void criarCarrinho_clienteIdentificado_novoCarrinho() throws Exception {
+        when(clienteGateway.getClienteByCpf(new Cpf("12332112340"))).thenReturn(cliente123);
+
         when(carrinhoGateway.getCarrinhoSalvoByCliente(new IdCliente(123))).thenReturn(null);
         when(clock.localDateTime()).thenReturn(dateTime);
 
         when(carrinhoGateway.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
                 carrinhoVazioCliente123.withId(99));
 
-        when(clienteGateway.getClienteById(123)).thenReturn(cliente123);
+        UsuarioLogado usuarioLogado = mockUsuarioLogado("12332112340");
 
-        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(123, null, null, null));
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null), usuarioLogado);
         assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(99));
     }
 
@@ -85,21 +94,20 @@ class CarrinhoUseCasesTest {
         when(carrinhoGateway.salvarCarrinhoVazio(carrinhoNaoIdentificado)).thenReturn(
                 carrinhoNaoIdentificado.withId(101));
 
-        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null, "João", null, null));
+        UsuarioLogado usuarioNaoLogado = mockUsuarioLogado(null);
+
+        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam("João"), usuarioNaoLogado);
         assertThat(result).isEqualTo(carrinhoNaoIdentificado.withId(101));
     }
 
     @Test
-    void criarCarrinho_cadastrarNovoCliente_novoCarrinho() throws Exception {
-        when(clock.localDateTime()).thenReturn(dateTime);
+    void criarCarrinho_clienteNaoIdentificado_erroNomeNaoInformado() throws Exception {
+        UsuarioLogado usuarioNaoLogado = mockUsuarioLogado(null);
 
-        when(clienteGateway.salvarCliente(clienteSemId)).thenReturn(cliente123);
-
-        when(carrinhoGateway.salvarCarrinhoVazio(carrinhoVazioCliente123)).thenReturn(
-                carrinhoVazioCliente123.withId(102));
-
-        var result = carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(null, "Cliente", "12332112340", "cliente123@example.com"));
-        assertThat(result).isEqualTo(carrinhoVazioCliente123.withId(102));
+        assertThat(
+                assertThrows(DomainArgumentException.class, () ->
+                        carrinhoUseCases.criarCarrinho(new CriarCarrinhoParam(""), usuarioNaoLogado))
+        ).hasMessage("Cliente não autenticado deve informar o nomeCliente");
     }
 
     @Test
@@ -183,9 +191,19 @@ class CarrinhoUseCasesTest {
         ));
     }
 
+    private UsuarioLogado mockUsuarioLogado(String cpf) {
+        UsuarioLogado usuarioLogado = mock(UsuarioLogado.class);
+        if (cpf == null) {
+            when(usuarioLogado.autenticado()).thenReturn(false);
+        } else {
+            when(usuarioLogado.getCpf()).thenReturn(cpf);
+            when(usuarioLogado.autenticado()).thenReturn(true);
+        }
+        return usuarioLogado;
+    }
+
     // // // Predefined test objects
     private final Cliente cliente123 = new Cliente(new IdCliente(123), "Cliente", new Cpf("12332112340"), "cliente123@example.com");
-    private final Cliente clienteSemId = new Cliente(null, "Cliente", new Cpf("12332112340"), "cliente123@example.com");
 
     private final LocalDateTime dateTime = LocalDateTime.of(2024, 4, 29, 15, 30);
 

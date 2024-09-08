@@ -38,6 +38,24 @@
         </dependency>
 
         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
@@ -103,6 +121,11 @@
                         <archburgers.integration.mercadopago.accessToken>APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889</archburgers.integration.mercadopago.accessToken>
                         <archburgers.integration.mercadopago.posId>LOJA1POS1</archburgers.integration.mercadopago.posId>
                         <archburgers.integration.mercadopago.notificationUrl>https://gomesrodris-mplabs.requestcatcher.com/payment-hooks/mercadopago</archburgers.integration.mercadopago.notificationUrl>
+
+                        <archburgers.integration.aws.region>us-east-1</archburgers.integration.aws.region>
+                        <archburgers.integration.cognito.userPoolId>us-east-1_6dGZa2FaP</archburgers.integration.cognito.userPoolId>
+                        <archburgers.integration.cognito.clientId>57f3mvsoikevj11b3u3q5cbvd0</archburgers.integration.cognito.clientId>
+                        <archburgers.integration.cognito.clientSecret>pd8gcvs6io6eg3em9ffg1dpj647gg08o5t5u0metasg97i2vpfn</archburgers.integration.cognito.clientSecret>
                     </environmentVariables>
                 </configuration>
             </plugin>
