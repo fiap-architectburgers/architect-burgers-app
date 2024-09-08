@@ -1,5 +1,5 @@
 name: verify-project-on-pull-request
-run-name: Verifying on PR ${{github.event.pull_request.title}}
+run-name: Verifying on PR - ${{github.event.pull_request.title}}
 on:
   pull_request:
     types:
