@@ -13,7 +13,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-class DatabaseConnectionTest {
+/**
+ * Database Integration Tests
+ */
+class DatabaseConnectionIT {
     private static RealDatabaseTestHelper realDatabase;
 
     private DatabaseConnection databaseConnection;

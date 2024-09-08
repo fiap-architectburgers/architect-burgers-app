@@ -2,7 +2,6 @@ package com.example.gomesrodris.archburgers.adapters.datasource;
 
 import com.example.gomesrodris.archburgers.domain.entities.ItemCardapio;
 import com.example.gomesrodris.archburgers.domain.entities.ItemPedido;
-import com.example.gomesrodris.archburgers.domain.datagateway.ItemCardapioGateway;
 import com.example.gomesrodris.archburgers.domain.valueobjects.TipoItemCardapio;
 import com.example.gomesrodris.archburgers.domain.valueobjects.ValorMonetario;
 import com.example.gomesrodris.archburgers.testUtils.RealDatabaseTestHelper;
@@ -14,7 +13,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ItemCardapioRepositoryJdbcImplTest {
+/**
+ * Database Integration Tests
+ */
+class ItemCardapioRepositoryJdbcImplIT {
     private static RealDatabaseTestHelper realDatabase;
     private DatabaseConnection databaseConnection;
 
