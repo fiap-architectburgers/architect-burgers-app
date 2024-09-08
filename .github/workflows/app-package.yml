@@ -1,10 +1,10 @@
 name: app-test-and-build
 run-name: Packaging application
-on: push
-#  push:
-#    branches:
-#      - main
-#      - pipeline_test_dest # Temporary - testing
+on:
+  push:
+    branches:
+      - main
+      - pipeline_test_dest # Temporary - testing
 
 jobs:
   mvn-install-with-libs:
@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Maven Install and Copy libraries
-        run: mvn install dependency:copy-dependencies
+        run: mvn -DskipTests install dependency:copy-dependencies
       - name: Prepare app directory
         run: mkdir ./docker/temp_libs && cp ./modules/web-app/target/architect-burgers-webapi-*.jar ./docker/temp_libs/ && cp ./modules/web-app/target/lib/* ./docker/temp_libs/
       - name: Archive app directory
