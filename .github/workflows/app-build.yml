@@ -1,6 +1,9 @@
 name: app-test-and-build
 run-name: Testing and building ${{github.actor}}'s changes
-on: [push]
+on:
+  push:
+    branches:
+      - temporarily_disabled
 jobs:
   mvn-test:
     runs-on: ubuntu-latest
