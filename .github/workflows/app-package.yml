@@ -5,6 +5,7 @@ on: push
 #    branches:
 #      - main
 #      - pipeline_test_dest # Temporary - testing
+
 jobs:
   mvn-install-with-libs:
     runs-on: ubuntu-latest
@@ -18,7 +19,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Maven Install and Copy libraries
-        run: mvn -DskipTests install dependency:copy-dependencies
+        run: mvn install dependency:copy-dependencies
       - name: Prepare app directory
         run: mkdir ./docker/temp_libs && cp ./modules/web-app/target/architect-burgers-webapi-*.jar ./docker/temp_libs/ && cp ./modules/web-app/target/lib/* ./docker/temp_libs/
       - name: Archive app directory
@@ -27,10 +28,16 @@ jobs:
           name: app-libs-dir
           path: ./docker/temp_libs/*
           retention-days: 1
+      - id: OutputProjectVersion
+        run: echo "project_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> "$GITHUB_OUTPUT"
+    outputs:
+      project_version: ${{ steps.OutputProjectVersion.outputs.project_version }}
 
   build-docker-image:
     needs: mvn-install-with-libs
     runs-on: ubuntu-latest
+    env:
+      PROJECT_VERSION: ${{ needs.mvn-install-with-libs.outputs.project_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,5 +58,4 @@ jobs:
         with:
           context: ./docker
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:latest,${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:0.0.2
-
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:latest,${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:${{PROJECT_VERSION}}
