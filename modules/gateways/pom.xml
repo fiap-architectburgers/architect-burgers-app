@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.example.gomesrodris-fiap</groupId>
         <artifactId>architect-burgers-parent</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
