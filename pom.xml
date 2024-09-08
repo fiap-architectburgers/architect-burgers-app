@@ -5,7 +5,7 @@
     <groupId>com.example.gomesrodris-fiap</groupId>
     <artifactId>architect-burgers-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.3</version>
+    <version>${projectVersion}</version>
 
     <properties>
         <java.version>21</java.version>
