@@ -20,7 +20,7 @@ jobs:
       - name: Maven Install and Copy libraries
         run: mvn install dependency:copy-dependencies
       - name: Prepare app directory
-        run: mkdir temp_libs && cp ./web-app/target/architect-burgers-webapi-*.jar ./temp_libs/ ** cp ./web-app/target/lib/* ./temp_libs/
+        run: mkdir temp_libs && cp ./modules/web-app/target/architect-burgers-webapi-*.jar ./temp_libs/ && cp ./modules/web-app/target/lib/* ./temp_libs/
       - name: Archive app directory
         uses: actions/upload-artifact@v4
         with:
