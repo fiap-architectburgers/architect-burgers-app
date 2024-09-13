@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archburgers-aws-config
+data:
+  "archburgers.integration.aws.AWS_ACCESS_KEY_ID": "ASIAZMQVHZMPKBVQWY2S"
+  "archburgers.integration.aws.AWS_SECRET_ACCESS_KEY": "Fhgj99q9xneRiU9y3W0uFEU4MSwDyH0jznETGLOd"
+  "archburgers.integration.aws.AWS_SESSION_TOKEN": "IQoJb3JpZ2luX2VjEMX//////////wEaCXVzLXdlc3QtMiJGMEQCIFqQ0XOTVUyT2/kCPqpR9N0kAEDV6xQnDT6Tef9KdcXYAiB7MFF+jMmqKVcvPwZb++Tttk1ga1T3M9LuMruHjQdbayq9Agje//////////8BEAEaDDY0NTM2MzM4NzE2NiIMPPv0mkBbKrtGl8wkKpECdKTiK87P4X0JbgTd8EnWxKUeibT2rF4zQReeZyGvSqcjENme35Nb0HBrI8qip44Vvtn+DMh2WAUFKfnBjiTWNgxiOUldAe7MCMb6uackk108Vb7MGpSgaa9YmvPX6Fxl5f7ptM0P5r3M8BPj5N1x2/Q9YIDBbx0i5zuyV8jpnwjM2shDBdpVc5ap4aTuu8zrgYPXvXBTPgQazBliGtzRFL0um18iGbNfbEC8CDEpsqpwr72QWy7A/RvuTowsulLoxyUPC+xG/Ys/9kc8PxQam6QoAt9F/ASeaforcf/AkMmZ6tb6Yv2GJp0ojMdlu0VgHi0M3nUp243inbQFEhiZQcA3ycSGdy648l9F0Gti4KQOMKyb47YGOp4BI8Opgi78BRpmbod383qln6hKDbXFBQMgUkw3dy0qGm6fQtRVdk8qn6MbN2fIPZsV9xIRh+Zbdr6sja0SEdpjcUVmdStEnpyM6bhzGNdMQejX9mR7AqLDk9HjVVwtapUkc7V6l2KsHhia3A0gz/d+tigZIjqaOe8DkLS7x20obqH8L28lD6gH6LG6vZcV1jvQFN1g4G1iug1G2uqujIk="
+
+  "archburgers.integration.aws.region": "us-east-1"
+  "archburgers.integration.cognito.userPoolId": "us-east-1_6dGZa2FaP"
+  "archburgers.integration.cognito.clientId": "57f3mvsoikevj11b3u3q5cbvd0"
+  "archburgers.integration.cognito.clientSecret": "pd8gcvs6io6eg3em9ffg1dpj647gg08o5t5u0metasg97i2vpfn"
+

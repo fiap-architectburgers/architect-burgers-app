@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archburgers-db-deployment
+spec:
+  selector:
+    matchLabels:
+      app: archburgers-db
+  template:
+    metadata:
+      labels:
+        app: archburgers-db
+    spec:
+      containers:
+        - name: archburgers-db-container
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: "POSTGRES_DB"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-db-access-config"
+                  key: "archburgers.datasource.db_name"
+            - name: "POSTGRES_USER"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-db-access-config"
+                  key: "archburgers.datasource.dbUser"
+            - name: "POSTGRES_PASSWORD"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-db-access-config"
+                  key: "archburgers.datasource.dbPass"
+            - name: "TZ"
+              value: "America/Sao_Paulo"
+#          volumeMounts:
+#            - mountPath: /var/lib/postgresql/data
+#              name: "pg-data-volume"
+          livenessProbe:
+            exec:
+              command:
+                - psql
+                - -U
+                - pguser
+                - -d
+                - archburgers
+                - -c
+                - "select 1"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+#      volumes:
+#        - name: "pg-data-volume"
+#          persistentVolumeClaim:
+#            claimName: "data-volume-claim"
+#            readOnly: false
