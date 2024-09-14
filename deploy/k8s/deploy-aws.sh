@@ -17,7 +17,7 @@ then
   exit 1
 fi
 
-cat ${baseDir}/db/db-configs-cloud.yml | sed "s/__DB_URL__/$dbUrl/" | kubectl apply -f -
+cat ${baseDir}/db/db-configs-cloud-template.yml | sed "s/{DB_URL}/$dbUrl/" | kubectl apply -f -
 if [ $? -ne 0 ]
 then
   echo "Failed to create db-configs-cloud"
