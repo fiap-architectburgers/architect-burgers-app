@@ -87,6 +87,9 @@ jobs:
       - name: Get database URL
         id: get-db-url
         run: ./deploy/utils/get-database-url.sh ${{vars.DB_INSTANCE_IDENTIFIER}} >> $GITHUB_OUTPUT
+      - name: Get API Gateway info
+        id: get-apigw-info
+        run: ./deploy/utils/get-external-api-info.sh ${{vars.API_GATEWAY_NAME}} >> $GITHUB_OUTPUT
       - name: Configure kubectl
         run: aws eks update-kubeconfig --name ${{vars.EKS_CLUSTER_NAME}}
 
@@ -96,7 +99,21 @@ jobs:
              | sed "s/{DB_URL}/${{ steps.get-db-url.outputs.DB_URL }}/" \
              | sed "s/{DB_NAME}/${{vars.DATABASE_NAME}}/" \
              | sed "s/{DB_USER}/${{vars.DATABASE_USER}}/" \
-             | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" > ./db-configs-cloud.yml
+             | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" > ./db-configs.yml
 
       - name: Checking
         run: cat ./db-configs-cloud.yml
+
+      - name: Prepare MercadoPago configmap
+        run: |
+          cat ./deploy/k8s/app/pagamento-configs-template.yml \
+             | sed "s/{APP_URL}/${{ steps.get-apigw-info.outputs.API_URL }}/" \
+             | sed "s/{POS_ID}/${{vars.MERCADOPAGO_POS_ID}}/" \
+             | sed "s/{USER_ID}/${{secrets.MERCADOPAGO_USER_ID}}/" \
+             | sed "s/{ACCESS_TOKEN}/${{secrets.MERCADOPAGO_ACCESS_TOKEN}}/" > ./pagamento-configs.yml
+
+      - name: Checking 1
+        run: cat ./db-configs.yml
+
+      - name: Checking 2
+        run: cat ./pagamento-configs.yml
