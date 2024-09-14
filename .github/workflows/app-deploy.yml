@@ -83,12 +83,12 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Verify EKS cluster
-        run: ./deploy/utils/check-cluster-status.sh ${{ vars.EKS_CLUSTER_NAME }}
+        run: ./deploy/utils/check-cluster-status.sh ${{vars.EKS_CLUSTER_NAME}}
       - name: Get database URL
         id: get-db-url
-        run: ./deploy/utils/get-database-url.sh >> $GITHUB_OUTPUT
+        run: ./deploy/utils/get-database-url.sh ${{vars.DB_INSTANCE_IDENTIFIER}} >> $GITHUB_OUTPUT
       - name: Configure kubectl
-        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }}
+        run: aws eks update-kubeconfig --name ${{vars.EKS_CLUSTER_NAME}}
 
       - name: Prepare DB configmap
         run: |
