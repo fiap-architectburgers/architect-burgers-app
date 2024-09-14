@@ -101,9 +101,6 @@ jobs:
              | sed "s/{DB_USER}/${{vars.DATABASE_USER}}/" \
              | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" > ./db-configs.yml
 
-      - name: Checking
-        run: cat ./db-configs-cloud.yml
-
       - name: Prepare MercadoPago configmap
         run: |
           cat ./deploy/k8s/app/pagamento-configs-template.yml \
