@@ -104,7 +104,7 @@ jobs:
       - name: Prepare MercadoPago configmap
         run: |
           cat ./deploy/k8s/app/pagamento-configs-template.yml \
-             | sed "s/{APP_URL}/${{ steps.get-apigw-info.outputs.API_URL }}/" \
+             | sed "s|{APP_URL}|${{ steps.get-apigw-info.outputs.API_URL }}|" \
              | sed "s/{POS_ID}/${{vars.MERCADOPAGO_POS_ID}}/" \
              | sed "s/{USER_ID}/${{secrets.MERCADOPAGO_USER_ID}}/" \
              | sed "s/{ACCESS_TOKEN}/${{secrets.MERCADOPAGO_ACCESS_TOKEN}}/" > ./pagamento-configs.yml
