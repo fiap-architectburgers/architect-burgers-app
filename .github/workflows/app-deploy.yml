@@ -82,6 +82,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
+      # Retrieving info from pre-requisite AWS services
       - name: Verify EKS cluster
         run: ./deploy/utils/check-cluster-status.sh ${{vars.EKS_CLUSTER_NAME}}
       - name: Get database URL
@@ -90,9 +91,13 @@ jobs:
       - name: Get API Gateway info
         id: get-apigw-info
         run: ./deploy/utils/get-external-api-info.sh ${{vars.API_GATEWAY_NAME}} >> $GITHUB_OUTPUT
+      - name: Get Cognito UserPool info
+        id: get-cognito-info
+        run: ./deploy/utils/get-user-pool-info.sh ${{vars.COGNITO_USER_POOL}} >> $GITHUB_OUTPUT
       - name: Configure kubectl
         run: aws eks update-kubeconfig --name ${{vars.EKS_CLUSTER_NAME}}
 
+      # Preparing configuration
       - name: Prepare DB configmap
         run: |
           cat ./deploy/k8s/db/db-configs-cloud-template.yml \
@@ -109,8 +114,23 @@ jobs:
              | sed "s/{USER_ID}/${{secrets.MERCADOPAGO_USER_ID}}/" \
              | sed "s/{ACCESS_TOKEN}/${{secrets.MERCADOPAGO_ACCESS_TOKEN}}/" > ./pagamento-configs.yml
 
+      - name: Prepare AWS+Cognito configmap
+        run: |
+          cat ./deploy/k8s/app/aws-configs-template.yml \
+             | sed "s/{ACCESS_KEY_ID}/${{secrets.AWS_ACCESS_KEY_ID}}/" \
+             | sed "s/{SECRET_ACCESS_KEY}/${{secrets.AWS_SECRET_ACCESS_KEY}}/" \
+             | sed "s/{SESSION_TOKEN}/${{secrets.AWS_SESSION_TOKEN}}/" \
+             | sed "s/{REGION}/us-east-1/" \
+             | sed "s/{USER_POOL_ID}/${{steps.get-cognito-info.outputs.USER_POOL_ID}}/" \
+             | sed "s/{USER_POOL_CLIENT_ID}/${{vars.steps.get-cognito-info.outputs.USER_POOL_CLIENT_ID}}/" \
+             | sed "s/{USER_POOL_CLIENT_SECRET}/${{steps.get-cognito-info.outputs.USER_POOL_CLIENT_SECRET}}/" > ./aws-configs.yml
+
+
       - name: Checking 1
         run: cat ./db-configs.yml
 
       - name: Checking 2
         run: cat ./pagamento-configs.yml
+
+      - name: Checking 3
+        run: cat ./aws-configs.yml

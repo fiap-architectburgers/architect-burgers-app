@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archburgers-aws-config
+data:
+  "archburgers.integration.aws.AWS_ACCESS_KEY_ID": "{ACCESS_KEY_ID}"
+  "archburgers.integration.aws.AWS_SECRET_ACCESS_KEY": "{SECRET_ACCESS_KEY}"
+  "archburgers.integration.aws.AWS_SESSION_TOKEN": "{SESSION_TOKEN}"
+
+  "archburgers.integration.aws.region": "{REGION}"
+  "archburgers.integration.cognito.userPoolId": "{USER_POOL_ID}"
+  "archburgers.integration.cognito.clientId": "{USER_POOL_CLIENT_ID}"
+  "archburgers.integration.cognito.clientSecret": "{USER_POOL_CLIENT_SECRET}"
+
