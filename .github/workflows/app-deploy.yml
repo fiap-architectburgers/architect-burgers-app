@@ -111,9 +111,9 @@ jobs:
       - name: Prepare AWS+Cognito configmap
         run: |
           cat ./deploy/k8s/app/aws-configs-template.yml \
-             | sed "s/{ACCESS_KEY_ID}/$(echo -n '${{secrets.AWS_ACCESS_KEY_ID}}')/" \
-             | sed "s/{SECRET_ACCESS_KEY}/$(echo -n '${{secrets.AWS_SECRET_ACCESS_KEY}}')/" \
-             | sed "s|{SESSION_TOKEN}|$(echo -n '${{secrets.AWS_SESSION_TOKEN}}')|" \
+             | sed "s/{ACCESS_KEY_ID}/$(echo -n '${{secrets.AWS_ACCESS_KEY_ID}}' | tr -d '\n')/" \
+             | sed "s/{SECRET_ACCESS_KEY}/$(echo -n '${{secrets.AWS_SECRET_ACCESS_KEY}}' | tr -d '\n')/" \
+             | sed "s|{SESSION_TOKEN}|$(echo -n '${{secrets.AWS_SESSION_TOKEN}}' | tr -d '\n')|" \
              | sed "s/{REGION}/us-east-1/" \
              | sed "s/{USER_POOL_ID}/${{steps.get-cognito-info.outputs.USER_POOL_ID}}/" \
              | sed "s/{USER_POOL_CLIENT_ID}/${{steps.get-cognito-info.outputs.USER_POOL_CLIENT_ID}}/" \
