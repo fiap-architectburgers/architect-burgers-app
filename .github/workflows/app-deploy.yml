@@ -112,7 +112,6 @@ jobs:
         run: |
           cat ./deploy/k8s/app/aws-configs-template.yml \
              | sed "s/{ACCESS_KEY_ID}/$(echo -n '${{secrets.AWS_ACCESS_KEY_ID}}' | tr -d '\n')/" \
-        
              | sed "s|{SESSION_TOKEN}|$(echo -n '${{secrets.AWS_SESSION_TOKEN}}' | tr -d '\n')|" \
              | sed "s/{REGION}/us-east-1/" \
              | sed "s/{USER_POOL_ID}/${{steps.get-cognito-info.outputs.USER_POOL_ID}}/" \
