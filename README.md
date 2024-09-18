@@ -49,6 +49,10 @@ $ docker compose up  [-d]
 # ou docker-compose up , se na distribuição utilizada o compose estiver em executável separado 
 ```
 
+### Deploy Kubernetes
+
+Ver doc no diretório `deploy`
+
 ### Documentos:
 
 - [Diagramas e documentação do DDD](https://miro.com/app/board/uXjVKYofLr8=/)
