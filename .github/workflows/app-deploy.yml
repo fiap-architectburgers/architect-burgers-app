@@ -164,7 +164,7 @@ jobs:
         run: kubectl apply -f deploy/k8s/app/app-service-loadbalancer.yml
 
       - name: Create App Deployment
-        run: kubectl apply -f deploy/k8s/app/app/app-deployment.yml
+        run: kubectl apply -f deploy/k8s/app/app-deployment.yml
 
       - name: Enable Metrics Server
         run: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
