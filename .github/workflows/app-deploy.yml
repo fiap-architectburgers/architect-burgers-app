@@ -112,19 +112,20 @@ jobs:
         run: |
           cat ./deploy/k8s/app/aws-configs-template.yml \
              | sed "s/{ACCESS_KEY_ID}/$(echo -n '${{secrets.AWS_ACCESS_KEY_ID}}' | tr -d '\n')/" \
-             | sed "s/{SECRET_ACCESS_KEY}/$(echo -n '${{secrets.AWS_SECRET_ACCESS_KEY}}' | tr -d '\n')/" \
+        
              | sed "s|{SESSION_TOKEN}|$(echo -n '${{secrets.AWS_SESSION_TOKEN}}' | tr -d '\n')|" \
              | sed "s/{REGION}/us-east-1/" \
              | sed "s/{USER_POOL_ID}/${{steps.get-cognito-info.outputs.USER_POOL_ID}}/" \
              | sed "s/{USER_POOL_CLIENT_ID}/${{steps.get-cognito-info.outputs.USER_POOL_CLIENT_ID}}/" \
-             | sed "s/{USER_POOL_CLIENT_SECRET}/${{steps.get-cognito-info.outputs.USER_POOL_CLIENT_SECRET}}/" > ./aws-configs.yml
+             | sed "s/{USER_POOL_CLIENT_SECRET}/${{steps.get-cognito-info.outputs.USER_POOL_CLIENT_SECRET}}/"
+        #> ./aws-configs.yml
 
-      - name: Upload configmaps
-        uses: actions/upload-artifact@v4
-        with:
-          name: k8s-config-maps
-          path: "*-configs.yml"
-          retention-days: 1
+#      - name: Upload configmaps
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: k8s-config-maps
+#          path: "*-configs.yml"
+#          retention-days: 1
 
   deploy-k8s:
     needs: prepare-k8s-aws-dependencies

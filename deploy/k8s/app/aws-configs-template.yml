@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: archburgers-aws-config
 data:
-  "archburgers.integration.aws.AWS_ACCESS_KEY_ID": "{ACCESS_KEY_ID}"
+  "archburgers.integration.aws.AWS_ACCESS_KEY_ID": "${ACCESS_KEY_ID}"
   "archburgers.integration.aws.AWS_SECRET_ACCESS_KEY": "{SECRET_ACCESS_KEY}"
   "archburgers.integration.aws.AWS_SESSION_TOKEN": "{SESSION_TOKEN}"
 
