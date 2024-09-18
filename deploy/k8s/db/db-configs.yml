@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archburgers-db-access-config
+data:
+  "archburgers.datasource.driverClass": "org.postgresql.Driver"
+  "archburgers.datasource.db_name": "archburgers"
+  "archburgers.datasource.dbUrl": "jdbc:postgresql://archburgers-db-svc/archburgers?autoReconnect=true"
+  "archburgers.datasource.dbUser": "pguser"
+  "archburgers.datasource.dbPass": "216hdjkasda%jhjKaA"
+

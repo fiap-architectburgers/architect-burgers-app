@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archburgers-pagamento-services-config
+data:
+  "archburgers.integration.mercadopago.apiBaseUrl": "https://api.mercadopago.com"
+  "archburgers.integration.mercadopago.userId": "{USER_ID}"
+  "archburgers.integration.mercadopago.accessToken": "{ACCESS_TOKEN}"
+  "archburgers.integration.mercadopago.posId": "{POS_ID}"
+  "archburgers.integration.mercadopago.notificationUrl": "{APP_URL}/pagamento-webhook/mercado-pago"
+

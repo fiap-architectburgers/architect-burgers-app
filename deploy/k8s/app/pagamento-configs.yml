@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archburgers-pagamento-services-config
+data:
+  "archburgers.integration.mercadopago.apiBaseUrl": "https://api.mercadopago.com"
+  "archburgers.integration.mercadopago.userId": "1898521889"
+  "archburgers.integration.mercadopago.accessToken": "APP_USR-5895347274256581-071317-d4d6b7289bb3a84a0edb8388342a8c3d-1898521889"
+  "archburgers.integration.mercadopago.posId": "LOJA1POS1"
+  #  "archburgers.integration.mercadopago.notificationUrl": "https://gomesrodris-mplabs.requestcatcher.com/pagamento-webhook/mercado-pago"
+  "archburgers.integration.mercadopago.notificationUrl": "http://adb05a37e59fc490cb51d499977f381f-883088565.us-east-1.elb.amazonaws.com:8090/pagamento-webhook/mercado-pago"
+
