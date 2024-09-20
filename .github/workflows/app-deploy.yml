@@ -96,7 +96,9 @@ jobs:
              | sed "s/{DB_URL}/${{ steps.get-db-url.outputs.DB_URL }}/" \
              | sed "s/{DB_NAME}/${{vars.DATABASE_NAME}}/" \
              | sed "s/{DB_USER}/${{vars.DATABASE_USER}}/" \
-             | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" > ./db-configs.yml
+             | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" \
+             | sed "s/{DB_MONGODB_URI}/${{secrets.DB_MONGODB_URI}}/" \
+             | sed "s/{DB_MONGODB_DATABASE}/${{vars.DB_MONGODB_DATABASE}}/" > ./db-configs.yml
 
       - name: Prepare MercadoPago configmap
         run: |

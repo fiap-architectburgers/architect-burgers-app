@@ -39,6 +39,18 @@ spec:
                   name: "archburgers-db-access-config"
                   key: "archburgers.datasource.dbPass"
 
+            - name: "archburgers.datasource-mongodb.uri"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-db-access-config"
+                  key: "archburgers.datasource-mongodb.uri"
+
+            - name: "archburgers.datasource-mongodb.database"
+              valueFrom:
+                configMapKeyRef:
+                  name: "archburgers-db-access-config"
+                  key: "archburgers.datasource-mongodb.database"
+
             - name: "archburgers.integration.mercadopago.apiBaseUrl"
               valueFrom:
                 configMapKeyRef:

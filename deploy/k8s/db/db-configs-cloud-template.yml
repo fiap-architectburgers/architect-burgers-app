@@ -7,4 +7,5 @@ data:
   "archburgers.datasource.dbUrl": "jdbc:postgresql://{DB_URL}/{DB_NAME}?autoReconnect=true"
   "archburgers.datasource.dbUser": "{DB_USER}"
   "archburgers.datasource.dbPass": "{DB_PASS}"
-
+  "archburgers.datasource-mongodb.uri": "{DB_MONGODB_URI}"
+  "archburgers.datasource-mongodb.database": "{DB_MONGODB_DATABASE}"
