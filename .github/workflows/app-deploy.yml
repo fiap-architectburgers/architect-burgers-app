@@ -67,6 +67,8 @@ jobs:
   prepare-k8s-aws-dependencies:
     needs: build-docker-image
     runs-on: ubuntu-latest
+    env:
+      PROJECT_VERSION: ${{ needs.mvn-install-with-libs.outputs.project_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,7 +99,7 @@ jobs:
              | sed "s/{DB_NAME}/${{vars.DATABASE_NAME}}/" \
              | sed "s/{DB_USER}/${{vars.DATABASE_USER}}/" \
              | sed "s/{DB_PASS}/${{secrets.DATABASE_PASSWORD}}/" \
-             | sed "s/{DB_MONGODB_URI}/${{secrets.DB_MONGODB_URI}}/" \
+             | sed "s|{DB_MONGODB_URI}|${{secrets.DB_MONGODB_URI}}|" \
              | sed "s/{DB_MONGODB_DATABASE}/${{vars.DB_MONGODB_DATABASE}}/" > ./kube-db-configs.yml
 
       - name: Prepare MercadoPago configmap
@@ -124,18 +126,16 @@ jobs:
           cat ./deploy/k8s/app/app-deployment.yml \
             | sed "s|image: .*architect-burgers.*$|image: ${{ vars.DOCKERHUB_USERNAME }}/architect-burgers:${{env.PROJECT_VERSION}}|" > ./kube-app-deployment-updated.yml
 
-      - name: Upload configmaps
+      - name: Upload kube artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: k8s-apply-artifacts
+          name: kube-artifacts
           path: "kube-*.yml"
           retention-days: 1
 
   deploy-k8s:
     needs: prepare-k8s-aws-dependencies
     runs-on: ubuntu-latest
-    env:
-      PROJECT_VERSION: ${{ needs.mvn-install-with-libs.outputs.project_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -150,7 +150,7 @@ jobs:
       - name: Download configmaps
         uses: actions/download-artifact@v4
         with:
-          name: k8s-apply-artifacts
+          name: kube-artifacts
           path: ./
 
       - name: Configure kubectl
