@@ -11,6 +11,8 @@ DATABASE_NAME=postgres
 DATABASE_USER=burger
 DB_PW=Burgers2024
 
+APP_IMAGE=gomesrodris/architect-burgers:0.0.8
+
 MERCADOPAGO_POS_ID=Dummy  # Set if needed
 MERCADOPAGO_USER_ID=Dummy
 MERCADOPAGO_ACCESS_TOKEN=DummyDummy
@@ -21,6 +23,7 @@ baseDir=$(dirname $0)
 
 cd $baseDir || exit 1
 mkdir /tmp/deploy
+
 
 ./utils/check-cluster-status.sh ${EKS_CLUSTER_NAME}
 if [ $? -ne 0 ]
@@ -92,6 +95,9 @@ then
   exit 1
 fi
 
+cat ./k8s/app/app-deployment.yml \
+  | sed "s|image: .*architect-burgers.*$|image: $APP_IMAGE|" > /tmp/deploy/app-deployment.yml
+
 aws eks update-kubeconfig --name ${EKS_CLUSTER_NAME}
 
 kubectl apply -f /tmp/deploy/db-configs.yml
@@ -122,7 +128,7 @@ then
   exit 1
 fi
 
-kubectl apply -f ./k8s/app/app-deployment.yml
+kubectl apply -f /tmp/deploy/app-deployment.yml
 if [ $? -ne 0 ]
 then
   echo "Error running kubectl step. See error messages"
