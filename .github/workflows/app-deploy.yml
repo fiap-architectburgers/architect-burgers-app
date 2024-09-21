@@ -1,9 +1,9 @@
 name: app-deploy
 run-name: Package and deploy application
-on: push
-#  push:    // TODO Enable in main only
-#    branches:
-#      - main
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   mvn-install-with-libs:
