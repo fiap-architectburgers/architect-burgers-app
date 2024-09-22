@@ -6,7 +6,7 @@ Dicionario de linguagem ubíqua do dominio
 - Cliente: Consumidor final do estabelecimento, é quem realiza a compra das refeições. Podem ser:
   - Cliente identificado: possui seus dados (CPF, Nome, Email) cadastrados no estabelecimento, e ao fazer uma compra permite recuperar os dados através do CPF;
   - Cliente não identificado: não possui cadastro no estabelecimento, ou não deseja utilizá-lo. Informa apenas seu Nome para uso durante o atendimento do pedido.
-- Chefe da cozinha: Responsável por verificar os pedidos que chegam, acompanhar seu preparo e garantir que sejam entregues com rapidez e qualidade
+- Chefe da cozinha: Responsável por verificar os pedidos que chegam, acompanhar seu preparo e garantir que sejam entregues com rapidez e qualidade;
 - Equipe da cozinha: Responsável pelo preparo dos alimentos
 - Atendente: Interage com o cliente. É responsável por auxiliá-los a fazer o pedido no sistema e entregar o pedido após preparo.
 
